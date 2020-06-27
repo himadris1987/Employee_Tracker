@@ -1,6 +1,6 @@
 var mysql = require ("mysql");
 var inquirer = require ("inquirer");
-var console = require ("console.table");
+var consoletable = require ("console.table");
 // const { allowedNodeEnvironmentFlags } = require("process");
 
 var connection = mysql.createConnection({
@@ -81,13 +81,14 @@ function runTracker(){
             connection.query(
                 "INSERT INTO Departments SET ?",
                 {
-                    department: answer.newdept
+                    department: answer.newdep
                 }
             );
             var query = "SELECT * FROM Departments";
             connection.query (query, function (err,res){
                 if (err) throw err;
-                console.table ("All Departments", res);
+                console.log("All Departments" + res);
+                console.table(res);
                 runTracker();
             })
         })
@@ -102,7 +103,7 @@ function runTracker(){
             },
                 {name: "dept",
                 type: "input",
-                message: "What depeartment does this role fit in?"
+                message: "What department does this role fit in?"
             }
         ]).then(function (answer){
             connection.query(
@@ -112,10 +113,12 @@ function runTracker(){
                     department_id: answer.dept
                 }
             );
-            var query = "SELECT * FROM Roles";
+            var query = "SELECT * FROM Roles, Departments";
+            query += "FROM Roles INNER JOIN department";
             connection.query (query, function (err,res){
                 if (err) throw err;
-                console.table ("All Roles", res);
+                console.log ("All Roles")
+                console.table ( res);
                 runTracker();
             })
         })
