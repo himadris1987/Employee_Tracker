@@ -1,7 +1,7 @@
 var mysql = require ("mysql");
 var inquirer = require ("inquirer");
-var console =
-const { allowedNodeEnvironmentFlags } = require("process");
+var console = require ("console.table");
+// const { allowedNodeEnvironmentFlags } = require("process");
 
 var connection = mysql.createConnection({
     host: "localhost",
@@ -166,3 +166,76 @@ function runTracker(){
         })
     }
 
+    function viewEmp(){
+        var query = "SELECT * FROM Employee";
+        connection.query (query, function (err, res){
+        if (err) throw err;
+        console.log (res.length + "showing employees");
+        console.table ("All Employee:", res);
+        runTracker();
+    })
+}
+
+function viewDep(){
+    var query = "SELECT * FROM Departments";
+    connection.query (query, function (err, res){
+    if (err) throw err;
+    console.log (res.length + "showing deparments");
+    console.table ("All Departments:", res);
+    runTracker();
+})
+}
+
+function viewRoles(){
+    var query = "SELECT * FROM Roles";
+    connection.query (query, function (err, res){
+    if (err) throw err;
+    console.log (res.length + "showing roles");
+    console.table ("All Roles:", res);
+    runTracker();
+})
+}
+
+function upEmpRoles(){
+    inquirer.prompt([
+        {
+            name: "id",
+            type: "input",
+            message: "Who's id does this new role belong to?"
+
+        },
+        {
+            name: "title",
+            type: "input",
+            message: "What is the new title of this role"
+        },
+        {
+            name: "salary",
+            type: "input",
+            message: "What is the new salary of this role"
+        },
+        {
+            name: "deparment",
+            type:"input",
+            message: "What is the new department of this role"
+        }
+    ]).then(function (answer){
+        connection.query (
+            "UPDATE Roles SET ? WHERE ?",
+            {
+                id: answers.id,
+                title: answers.title,
+                salary: answers.salary,
+                department: answers.department,
+            }
+        );
+        var query = "SELECT FROM Roles";
+        connection.query (query, function (err, res){
+            if (err) throw err;
+            console.table ("Updated Roles", res);
+            runTracker();
+        })
+
+    })
+}
+}
